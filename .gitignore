@@ -1,0 +1,7 @@
+*/.ipynb_checkpoints/*
+*.jpg
+*.jpeg
+*.png
+*.pdf
+*.tiff
+*.pyc
