@@ -108,20 +108,20 @@ def calculate_std_vs(vs_swp_num_lst):
             
             # New method which doesn't work for older stim sets
             #bl_long = sweep.i[bl_long_start : bl_end]
-            #sigma_long = np.std(bl_long).round(3)
+            #long_rms = np.std(bl_long).round(3)
             
             # Old method works for older stim sets
             buffer2 = samp_rate * 0.015
             bl_long = sweep.i[(int(test_epoch[1]+buffer2)):stim_epoch[0]]
-            sigma_long = np.std(bl_long).round(3)
+            long_rms = np.std(bl_long).round(3)
             
             # New method that works for old and new stim sets
             bl_short = sweep.i[bl_short_start : bl_end]
-            sigma_short = np.std(bl_short).round(3)
+            short_rms = np.std(bl_short).round(3)
             
             #print(bl_long_start, bl_end)
-            return sigma_long, sigma_short
+            return long_rms, short_rms
 
     except (NameError, TypeError) as e:
         print("NameError")
-        return None
+        return None    
