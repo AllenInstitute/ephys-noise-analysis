@@ -160,6 +160,9 @@ cell_list = jem_df["jem-id_cell_specimen"].tolist()
 
 if os.path.exists(noise_data_dir):
     noise_df = pd.read_csv(noise_data_dir)
+    # Sort values by date
+    noise_df.sort_values(by=["jem-date_patch"], ascending=False, inplace=True)
+
 else:
     noise_df = pd.DataFrame(columns=noise_cols)
     noise_df.to_csv(noise_data_dir, mode="a", index=False, header=noise_cols)
