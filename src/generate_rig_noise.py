@@ -122,7 +122,7 @@ def calculate_std_vs(vs_swp_num_lst):
             #print(bl_long_start, bl_end)
             return long_rms, short_rms
 
-    except (NameError, TypeError) as e:
+    except (NameError, TypeError, AttributeError) as e:
         print("NameError")
         return None    
 
@@ -190,7 +190,7 @@ for cell_name in cell_list:
             vs_inbath_sweep_nums = dataset.get_sweep_numbers(stimuli=vs_inbath_stim_names)
             vs_cellatt_sweep_nums = dataset.get_sweep_numbers(stimuli=vs_cellatt_stim_names)
             vs_breakin_sweep_nums = dataset.get_sweep_numbers(stimuli=vs_breakin_stim_names)
-        except IndexError:
+        except (IndexError) as e:
             print(f"{cell_name} does not contain a voltage sweep.")
 
         try: 
