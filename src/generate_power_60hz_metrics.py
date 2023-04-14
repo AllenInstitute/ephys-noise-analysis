@@ -120,49 +120,52 @@ for cell_name in cell_list:
         print(f"Cell name: {cell_name}")
         print(f"File path: {nwb2_filepath}")
         
-        # Use nwb2_filepath to find hdf5 file
-        h5f5_file = h5py.File(nwb2_filepath, "r")
+        try:
+            # Use nwb2_filepath to find hdf5 file
+            h5f5_file = h5py.File(nwb2_filepath, "r")
         
-        # Use hdf5_file to find the TextualResultsKeys
-        textual_results_keys = h5f5_file["general/results/textualResultsKeys"]
+            # Use hdf5_file to find the TextualResultsKeys
+            textual_results_keys = h5f5_file["general/results/textualResultsKeys"]
         
-        keys_list = []
-        search_str = "Sweep Formula store [power60HzRatio]"
-        for k in textual_results_keys[0]:
-            keys_list.append(k)
+            keys_list = []
+            search_str = "Sweep Formula store [power60HzRatio]"
+            for k in textual_results_keys[0]:
+                keys_list.append(k)
         
-        if search_str in keys_list:
-            power60idx = keys_list.index(search_str)
-            print(cell_name)
-            print(search_str)
-            print(power60idx)
+            if search_str in keys_list:
+                power60idx = keys_list.index(search_str)
+                print(cell_name)
+                print(search_str)
+                print(power60idx)
         
-            # Use hdf5_file to find the TextualResultsValues
-            textual_results_values = h5f5_file["general/results/textualResultsValues"]
+                # Use hdf5_file to find the TextualResultsValues
+                textual_results_values = h5f5_file["general/results/textualResultsValues"]
 
-            for k in range(len(textual_results_values)):
-                # k = ?
-                if len(textual_results_values[k][power60idx][last_nwb_layer]) > 0:
-                    cell_values_list.append(textual_results_values[k][power60idx][last_nwb_layer])
+                for k in range(len(textual_results_values)):
+                    # k = ?
+                    if len(textual_results_values[k][power60idx][last_nwb_layer]) > 0:
+                        cell_values_list.append(textual_results_values[k][power60idx][last_nwb_layer])
 
-            # Remove ";" from each string in the cell_values_list
-            cell_values_list = [sub[: -1] for sub in cell_values_list]
-            # Convert all items in list from string to float
-            cell_values_list = [float(x) for x in cell_values_list]
+                # Remove ";" from each string in the cell_values_list
+                cell_values_list = [sub[: -1] for sub in cell_values_list]
+                # Convert all items in list from string to float
+                cell_values_list = [float(x) for x in cell_values_list]
 
-            # Create mean, mediuan and standard deviation for cell_values_list
-            mean = np.mean(cell_values_list)
-            med = np.median(cell_values_list)
-            std = np.std(cell_values_list)
+                # Create mean, mediuan and standard deviation for cell_values_list
+                mean = np.mean(cell_values_list)
+                med = np.median(cell_values_list)
+                std = np.std(cell_values_list)
 
-            # Create a dictionary with mean, meadian and standard deviation
-            cell_values_dict["power_60hz_mean"] = mean
-            cell_values_dict['power_60hz_median'] = med
-            cell_values_dict["power_60hz_std"] = std
+                # Create a dictionary with mean, meadian and standard deviation
+                cell_values_dict["power_60hz_mean"] = mean
+                cell_values_dict['power_60hz_median'] = med
+                cell_values_dict["power_60hz_std"] = std
 
-            # Create a main dictionary (power_60hz_dict) with an inner dictionary (cell_values_dict)
-            power_60hz_dict[cell_name] = cell_values_dict
-        else:
+                # Create a main dictionary (power_60hz_dict) with an inner dictionary (cell_values_dict)
+                power_60hz_dict[cell_name] = cell_values_dict
+            else:
+                pass
+        except KeyError as e:
             pass
         num += 1
 
