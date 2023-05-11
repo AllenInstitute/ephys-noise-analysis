@@ -102,12 +102,11 @@ cell_list = jem_df["jem-id_cell_specimen"].tolist()
 len(cell_list)
 
 power_60hz_dict = {}
-last_nwb_layer = 8
+last_nb_layer = 8
 
 num = 1
 start = time.time()
 for cell_name in cell_list:
-    cell_values_dict = {}
     cell_values_list = []
     
     print(f"***Loop ({num})***")
@@ -134,35 +133,22 @@ for cell_name in cell_list:
         
             if search_str in keys_list:
                 power60idx = keys_list.index(search_str)
-                print(cell_name)
-                print(search_str)
-                print(power60idx)
         
                 # Use hdf5_file to find the TextualResultsValues
                 textual_results_values = h5f5_file["general/results/textualResultsValues"]
 
                 for k in range(len(textual_results_values)):
                     # k = ?
-                    if len(textual_results_values[k][power60idx][last_nwb_layer]) > 0:
-                        cell_values_list.append(textual_results_values[k][power60idx][last_nwb_layer])
+                    if len(textual_results_values[k][power60idx][last_nb_layer]) > 0:
+                        cell_values_list.append(textual_results_values[k][power60idx][last_nb_layer])
 
                 # Remove ";" from each string in the cell_values_list
                 cell_values_list = [sub[: -1] for sub in cell_values_list]
                 # Convert all items in list from string to float
                 cell_values_list = [float(x) for x in cell_values_list]
 
-                # Create mean, mediuan and standard deviation for cell_values_list
-                mean = np.mean(cell_values_list)
-                med = np.median(cell_values_list)
-                std = np.std(cell_values_list)
-
-                # Create a dictionary with mean, meadian and standard deviation
-                cell_values_dict["power_60hz_mean"] = mean
-                cell_values_dict['power_60hz_median'] = med
-                cell_values_dict["power_60hz_std"] = std
-
-                # Create a main dictionary (power_60hz_dict) with an inner dictionary (cell_values_dict)
-                power_60hz_dict[cell_name] = cell_values_dict
+                # Create a dictionary (power_60hz_dict) with the last value from cell_values_list
+                power_60hz_dict[cell_name] = cell_values_list[-1]
             else:
                 pass
         except KeyError as e:
@@ -171,14 +157,10 @@ for cell_name in cell_list:
 
 print("\nThe for loop was executed in", round(((time.time()-start)/60), 2), "minutes.")
 
-# .transpose() switches the rows and columns
-df = pd.DataFrame(power_60hz_dict).transpose()
-# Reset the index to name the cell_name column
-df.reset_index(inplace=True)
-df.rename(columns={"index": "cell_name"}, inplace=True)
-
+# Change dictionary to a pandas dataframe
+df = pd.DataFrame(power_60hz_dict.items(), columns=["cell_name", "average_power_60hz"])
 # Merge dataframes to get the date column
-merged_cols = ["jem-date_patch", "cell_name", "power_60hz_mean", "power_60hz_median", "power_60hz_std"]
+merged_cols = ["jem-date_patch", "cell_name", "average_power_60hz"]
 merged_df = pd.merge(left=df, right=jem_df, how="left", left_on="cell_name", right_on="jem-id_cell_specimen")
 merged_df = merged_df[merged_cols]
 
